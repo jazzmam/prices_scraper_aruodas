@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import smtplib
+import schedule
+import time
 
 
 URL = 'https://www.aruodas.lt/namai-vilniuje-didziuosiuose-gulbinuose-moletu-pl-3-kambariu-kotedzas-uzmiestyje-uz-studijos-2-1304983/'
@@ -46,7 +48,7 @@ def sendEmail():
 		msg
 	)
 
-	print("EMAIL HAS BEEN SENTTTfsfsdfsdf")
+	print("EMAIL HAS BEEN SENT")
 
 	server.quit()
 
