@@ -1,11 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 import smtplib
-import schedule
-import time
 
 
-URL = 'https://www.aruodas.lt/namai-vilniuje-didziuosiuose-gulbinuose-moletu-pl-3-kambariu-kotedzas-uzmiestyje-uz-studijos-2-1304983/'
+#URL = 'https://www.aruodas.lt/namai-vilniuje-didziuosiuose-gulbinuose-moletu-pl-3-kambariu-kotedzas-uzmiestyje-uz-studijos-2-1304983/'
+URL = 'https://www.aruodas.lt/gyvenamieji-namai/vilniaus-rajone/?FBuildingType=box&FAreaOverAllMin=55&FAreaOverAllMax=150&FPriceMax=100000&FPriceMin=55000'
 
 headers = {"User-Agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36'}
 
@@ -15,21 +14,15 @@ def checkPrice():
 
 	soup = BeautifulSoup(page.content, 'html.parser')
 
+	price = soup.find(class_= "list-item-price").getText()
+	price_elements = soup.find_all(class_= "list-item-price")
+
+	for price in price_elements:
+		print(price.getText())
 
 
-	title = soup.find(class_= "obj-header-text").getText()
-	price = soup.find(class_= "price-eur").getText()
-	converted_price = price.strip()
-
-
-	print(title.strip())
-	print(price.strip())
-
-	#if(converted_price )
-	sendEmail()
-
-
-def sendEmail():
+"""
+def sendEmail(price):
 	server = smtplib.SMTP('smtp.gmail.com', 587)
 	server.ehlo()
 	server.starttls()
@@ -38,7 +31,7 @@ def sendEmail():
 	server.login('cantaccessmy@gmail.com', 'zmbhkfepgjwxeltn')
 
 	subject = 'ARUODAS - namas Vilniaus rajone'
-	body = 'ARUODAS - namas Vilniaus rajone https://www.aruodas.lt/namai-vilniuje-didziuosiuose-gulbinuose-moletu-pl-3-kambariu-kotedzas-uzmiestyje-uz-studijos-2-1304983/'
+	body = f'{price}'
 
 	msg = f"Subject: {subject}\n\n{body}"
 
@@ -51,7 +44,11 @@ def sendEmail():
 	print("EMAIL HAS BEEN SENT")
 
 	server.quit()
+"""
 
 
+def main():
+	checkPrice()
 
-checkPrice()
+
+main()
