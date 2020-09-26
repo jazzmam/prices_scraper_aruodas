@@ -1,48 +1,46 @@
 import requests
 from bs4 import BeautifulSoup
 import smtplib
+import csv
 
 
 URL = 'https://www.aruodas.lt/gyvenamieji-namai/vilniaus-rajone/?FBuildingType=box&FAreaOverAllMin=55&FAreaOverAllMax=150&FPriceMax=100000&FPriceMin=55000'
-
 headers = {"User-Agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36'}
 
 
-def checkPrice():
+def collectData():
 	page = requests.get(URL, headers=headers)
-
 	soup = BeautifulSoup(page.content, 'html.parser')
 
 
-	address_and_link_blocks = soup.find_all(class_= "list-adress")
-	price_blocks = soup.find_all(class_= "price")
-	area_and_state_blocks = soup.find_all(class_= "list-row")
+	list_blocks = soup.find_all(class_= "list-row")
 
 
-	for list in address_and_link_blocks:
-		address = list.find("h3").find("a").getText()
-		link = list.find("h3").find("a").get('href')
-
-		print(address)
+	file = open('nuosavi_namai_is_aruodo.csv', 'w')
+	writer = csv.writer(file)
 
 
-
-	for list in price_blocks:
-		price = list.find(class_= "list-item-price")
-		price_for_sq_meter = list.find(class_= "price-pm")
-
-		#print(price.getText() + " " + price_for_sq_meter.getText())
+	# write header row
+	writer.writerow(['Address', 'Price', 'Price for m2', 'Building Area', 'Land Area', 'Building State', 'Link'])
 
 
+	for elm in list_blocks:
+		if not elm.find(class_= "list-adress"): # skip ads
+			continue
 
-	for list in area_and_state_blocks:
-		building_area = list.find(class_= "list-AreaOverall")
-		land_area = list.find(class_= "list-AreaLot")
-		building_state = list.find(class_= "list-HouseStates")
+		address = elm.find("h3").find("a").getText()
+		price = elm.find(class_= "price").find(class_= "list-item-price").getText()
+		price_for_sq_meter = elm.find(class_= "price").find(class_= "price-pm").getText().strip().replace(' ','')
+		link = elm.find("h3").find("a").get('href')
+		building_area = elm.find(class_= "list-AreaOverall").getText().strip()
+		land_area = elm.find(class_= "list-AreaLot").getText().strip()
+		building_state = elm.find(class_= "list-HouseStates").getText().strip()
 
-		#if building_state: print(building_state.getText())
 
+		writer.writerow([address, price, price_for_sq_meter, building_area, land_area, building_state, link])
 
+	
+	file.close()
 
 
 """
@@ -72,7 +70,7 @@ def sendEmail(price):
 
 
 def main():
-	checkPrice()
+	collectData()
 
 
 main()
