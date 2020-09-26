@@ -14,20 +14,17 @@ def checkPrice():
 	soup = BeautifulSoup(page.content, 'html.parser')
 
 
-	all_lists = soup.find_all(class_= "list-row")
+	address_and_link_blocks = soup.find_all(class_= "list-adress")
 	price_blocks = soup.find_all(class_= "price")
+	area_and_state_blocks = soup.find_all(class_= "list-row")
 
 
-	for list in all_lists:
-		address = list.select('.list-adress h3 a')
-		#post_url = address_block.find('a').get('href')
-
-		building_area = list.find(class_= "list-AreaOverall")
-		land_area = list.find(class_= "list-AreaLot")
-		building_state = list.find(class_= "list-HouseStates")
+	for list in address_and_link_blocks:
+		address = list.find("h3").find("a").getText()
+		link = list.find("h3").find("a").get('href')
 
 		print(address)
-		print("AAAA")
+
 
 
 	for list in price_blocks:
@@ -35,6 +32,17 @@ def checkPrice():
 		price_for_sq_meter = list.find(class_= "price-pm")
 
 		#print(price.getText() + " " + price_for_sq_meter.getText())
+
+
+
+	for list in area_and_state_blocks:
+		building_area = list.find(class_= "list-AreaOverall")
+		land_area = list.find(class_= "list-AreaLot")
+		building_state = list.find(class_= "list-HouseStates")
+
+		#if building_state: print(building_state.getText())
+
+
 
 
 """
