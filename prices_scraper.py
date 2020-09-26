@@ -2,6 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 import smtplib
 import csv
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
 
 
 URL = 'https://www.aruodas.lt/gyvenamieji-namai/vilniaus-rajone/?FBuildingType=box&FAreaOverAllMin=55&FAreaOverAllMax=150&FPriceMax=100000&FPriceMin=55000'
@@ -17,6 +21,7 @@ def collectData():
 
 
 	file = open('nuosavi_namai_is_aruodo.csv', 'w')
+
 	writer = csv.writer(file)
 
 
@@ -43,34 +48,45 @@ def collectData():
 	file.close()
 
 
-"""
-def sendEmail(price):
-	server = smtplib.SMTP('smtp.gmail.com', 587)
-	server.ehlo()
-	server.starttls()
-	server.ehlo()
 
-	server.login('cantaccessmy@gmail.com', 'zmbhkfepgjwxeltn')
+def sendEmail():
+	email_user = 'cantaccessmy@gmail.com'
+	email_password = 'zmbhkfepgjwxeltn'
+	email_send = 'ruta.kalytyte@gmail.com'
 
 	subject = 'ARUODAS - namas Vilniaus rajone'
-	body = f'{price}'
 
-	msg = f"Subject: {subject}\n\n{body}"
+	msg = MIMEMultipart()
+	msg['From'] = email_user
+	msg['To'] = email_send
+	msg['Subject'] = subject
 
-	server.sendmail(
-		'cantaccessmy@gmail.com',
-		'ruta.kalytyte@gmail.com',
-		msg
-	)
+	body = 'Sarasas namu Vilniaus rajone is aruodas.lt yra prisegtam scv dokumente'
+	msg.attach(MIMEText(body,'plain'))
 
-	print("EMAIL HAS BEEN SENT")
+	filename='nuosavi_namai_is_aruodo.csv'
+	attachment  =open(filename,'rb')
 
+	part = MIMEBase('application','octet-stream')
+	part.set_payload((attachment).read())
+	encoders.encode_base64(part)
+	part.add_header('Content-Disposition',"attachment; filename= "+filename)
+
+	msg.attach(part)
+	text = msg.as_string()
+	server = smtplib.SMTP('smtp.gmail.com',587)
+	server.starttls()
+	server.login(email_user,email_password)
+
+
+	server.sendmail(email_user,email_send,text)
 	server.quit()
-"""
+
 
 
 def main():
 	collectData()
+	sendEmail()
 
 
 main()
