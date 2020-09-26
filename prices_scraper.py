@@ -14,14 +14,13 @@ headers = {"User-Agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleW
 
 def collectData():
 	page = requests.get(URL, headers=headers)
-	soup = BeautifulSoup(page.content, 'html.parser')
+	page_content = BeautifulSoup(page.content, 'html.parser')
 
 
-	list_blocks = soup.find_all(class_= "list-row")
+	list_blocks = page_content.find_all(class_= "list-row")
 
 
 	file = open('nuosavi_namai_is_aruodo.csv', 'w')
-
 	writer = csv.writer(file)
 
 
@@ -40,7 +39,6 @@ def collectData():
 		building_area = elm.find(class_= "list-AreaOverall").getText().strip()
 		land_area = elm.find(class_= "list-AreaLot").getText().strip()
 		building_state = elm.find(class_= "list-HouseStates").getText().strip()
-
 
 		writer.writerow([address, price, price_for_sq_meter, building_area, land_area, building_state, link])
 
