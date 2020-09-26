@@ -11,7 +11,46 @@ from email import encoders
 URL = 'https://www.aruodas.lt/gyvenamieji-namai/vilniaus-rajone/?FBuildingType=box&FAreaOverAllMin=55&FAreaOverAllMax=150&FPriceMax=100000&FPriceMin=55000'
 headers = {"User-Agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36'}
 
+def collectData():
 
+	file = open('nuosavi_namai_is_aruodo.csv', 'w')
+	writer = csv.writer(file)
+
+	# write header row
+	writer.writerow(['Address', 'Price', 'Price for m2', 'Building Area', 'Land Area', 'Building State', 'Link'])
+
+	pages_nr = [str(i) for i in range(2,4)]
+
+	for page_nr in pages_nr:
+		print("INFO IS PUSLAPIO NR "+page_nr)
+		page = requests.get('https://www.aruodas.lt/gyvenamieji-namai/vilniaus-rajone/puslapis/'+page_nr+'/?FBuildingType=box&FAreaOverAllMin=55&FAreaOverAllMax=150&FPriceMax=100000&FPriceMin=55000', headers=headers)
+		print('https://www.aruodas.lt/gyvenamieji-namai/vilniaus-rajone/puslapis/'+page_nr+'/?FBuildingType=box&FAreaOverAllMin=55&FAreaOverAllMax=150&FPriceMax=100000&FPriceMin=55000')
+		page_content = BeautifulSoup(page.content, 'html.parser')
+
+
+		list_blocks = page_content.find_all(class_= "list-row")
+		print(list_blocks)
+
+
+		for elm in list_blocks:
+			if not elm.find(class_= "list-adress"): # skip ads
+				continue
+
+			address = elm.find("h3").find("a").getText()
+			price = elm.find(class_= "price").find(class_= "list-item-price").getText()
+			price_for_sq_meter = elm.find(class_= "price").find(class_= "price-pm").getText().strip().replace(' ','')
+			link = elm.find("h3").find("a").get('href')
+			building_area = elm.find(class_= "list-AreaOverall").getText().strip()
+			land_area = elm.find(class_= "list-AreaLot").getText().strip()
+			building_state = elm.find(class_= "list-HouseStates").getText().strip()
+
+			writer.writerow([address, price, price_for_sq_meter, building_area, land_area, building_state, link])
+
+	
+	file.close()
+
+
+"""
 def collectData():
 	page = requests.get(URL, headers=headers)
 	page_content = BeautifulSoup(page.content, 'html.parser')
@@ -44,7 +83,7 @@ def collectData():
 
 	
 	file.close()
-
+"""
 
 
 def sendEmail():
