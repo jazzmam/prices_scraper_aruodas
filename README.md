@@ -1,4 +1,4 @@
-<h2>Real estate prices scraper ⚡️✌🏾✌🏻</h2>
+<h2>Real estate prices scraper ✌🏻✌🏾✌🏻</h2>
 <br />
 
 <h3>My motivation?</h3>
